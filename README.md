@@ -23,7 +23,7 @@ $$
 
 Đặt `index = n` để lần đầu rút sẽ kích hoạt `twist()` luôn.
 
-Ý nghĩa: công thức này làm khuếch tán bit từ `mt[i - 1]` sang `mt[i]` và phân bổ thông tin của seen lên toàn trạng thái.
+**Ý nghĩa:** công thức này làm khuếch tán bit từ `mt[i - 1]` sang `mt[i]` và phân bổ thông tin của seen lên toàn trạng thái.
 
 ### Twist
 Tạo ra 2 mask:
@@ -34,9 +34,10 @@ Với mỗi $i = 0...n-1$:
 1. Ghép 1 bit cao của `mt[i]` và 31 bit thấp của `mt[(i+1) $ n]`:
 
 $$
-x = (\mathrm{mt}[i] \,\&\, \mathrm{upper}) \;\mid\; (\mathrm{mt}[(i+1)\bmod n] \,\&\, \mathrm{lower})
+\begin{gather}
+x = (\text{mt}[i] \,\&\, \text{upper}) \;\big|\; (\text{mt}[(i+1)\bmod n] \,\&\, \text{lower})
+\end{gather}
 $$
-
 
 2. Dịch phải 1 bit:
 
@@ -56,7 +57,7 @@ $$
 \text{mt}[i] = \text{mt}[(i+1)\bmod n] \oplus xA
 $$
 
-Ý nghĩa: từ `mt[0..n-1]` hiện tại, sinh ra 624 trạng thía mới cho lần rút tiếp theo. Mỗi trạng thái mới là XOR của một trạng thái "cách nhau $m$ đơn vị" và sử dụng $upper, lower$ sao đó XOR với $a$ làm cho trạng thái mới đảm bảo tính hỗn loạn.
+**Ý nghĩa:** từ `mt[0..n-1]` hiện tại, sinh ra 624 trạng thía mới cho lần rút tiếp theo. Mỗi trạng thái mới là XOR của một trạng thái "cách nhau $m$ đơn vị" và sử dụng $upper, lower$ sao đó XOR với $a$ làm cho trạng thái mới đảm bảo tính hỗn loạn.
 
 ### Tempering
 Từ `mt[index]` tiếp tục đi qua các bước XOR + shift + mask với các tham số cố định:
@@ -69,4 +70,4 @@ x ^= (x << self.t) & self.c
 x ^= x >> self.l
 ```
 
-Ý nghĩa: cải thiện phân bố bit trên đầu ra (đạt các tính chất cân bằng k-distribution).
+**Ý nghĩa:** cải thiện phân bố bit trên đầu ra (đạt các tính chất cân bằng k-distribution).
