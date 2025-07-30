@@ -1,4 +1,4 @@
-# Hàm random của các ngôn ngữ
+# Crack random function of some languages.
 
 ## 1. Mersenne Twister MT19937 (Python)
 **Mersenne Twister (MT19937)** là một thuật toán tạo số giả ngẫu nhiên phổ biến được dùng trong ngôn ngữ Python sử dụng số nguyên tố Mersenne $2^{19937} - 1$ làm độ dài chu kì của nó. Bao gồm các hằng số:
@@ -6,13 +6,15 @@
 - Kích thước trạng thái `n = 624` phần tử 32-bit.
 - Chỉ số trễ `m = 397`.
 - Mask chia cao thấp gồm phần **upper** gồm 1 bit cao nhất (bit 31) và phần **lower** gồm 31 bit thấp.
-- `a` là ma trận "twits" ở dạng bitmask.
+- `a = 0x9908b0df` là ma trận "twits" ở dạng bitmask.
 - `(u, d), (s, b), (t, c), l` là các tham số **tempering** (dịch trái, dịch phải và AND với bitmask).
-- `f` là hằng số khởi tạo.
+- `f = 0x6C078965` là hằng số khởi tạo.
 
 Quy trình của MT19937 gồm 3 phần chính:
 
-### Initialization (seeding)
+### Thuật toán:
+
+#### Initialization (seeding)
 Ban đầu khởi tạo `mt[0] = seed`.
 
 Với $i = 1...n-1$:
@@ -25,7 +27,7 @@ $$
 
 **Ý nghĩa:** công thức này làm khuếch tán bit từ `mt[i - 1]` sang `mt[i]` và phân bổ thông tin của seen lên toàn trạng thái.
 
-### Twist
+#### Twist
 Tạo ra 2 mask:
 - `upper = 1 << (w - 1)` (bit thứ 31 bật, còn lại tắt).
 - `lower = (1 << (w - 1)) - 1` (bit thứ 31 tắt, còn lại bật).
@@ -43,7 +45,7 @@ $$
 xA = x >> 1
 $$
 
-3. Nếu $x$ lẻ, twist bằng ma trận $a$:
+3. Nếu $x$ lẻ, twist bằng hằng số $a$:
 
 $$
 (x \ \land \ 1) = 1 \Rightarrow xA = xA \oplus a
@@ -57,7 +59,7 @@ $$
 
 **Ý nghĩa:** từ `mt[0..n-1]` hiện tại, sinh ra 624 trạng thía mới cho lần rút tiếp theo. Mỗi trạng thái mới là XOR của một trạng thái "cách nhau $m$ đơn vị" và sử dụng `upper, lower` sao đó XOR với $a$ làm cho trạng thái mới đảm bảo tính hỗn loạn.
 
-### Tempering
+#### Tempering
 Từ `mt[index]` tiếp tục đi qua các bước (XOR + shift + mask) với các tham số cố định:
 
 ```
@@ -70,3 +72,4 @@ x &= self.d
 ```
 
 **Ý nghĩa:** cải thiện phân bố bit trên đầu ra (đạt các tính chất cân bằng k-distribution).
+

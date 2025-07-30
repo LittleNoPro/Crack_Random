@@ -12,6 +12,15 @@ class MT19937Recover:
     See also https://en.wikipedia.org/wiki/Mersenne_Twister#Pseudocode .
 
     """
+
+    w, n, m, r = 32, 624, 397, 31
+    a = 0x9908b0df
+    u, d = 11, 0xffffffff
+    s, b = 7, 0x9d2c5680
+    t, c = 15, 0xefc60000
+    l = 18
+    f = 0x6C078965
+
     def unshiftRight(self, x, shift):
         res = x
         for i in range(32):
@@ -27,10 +36,10 @@ class MT19937Recover:
     def untemper(self, v):
         """ Reverses the tempering which is applied to outputs of MT19937 """
 
-        v = self.unshiftRight(v, 18)
-        v = self.unshiftLeft(v, 15, 0xefc60000)
-        v = self.unshiftLeft(v, 7, 0x9d2c5680)
-        v = self.unshiftRight(v, 11)
+        v = self.unshiftRight(v, self.l)
+        v = self.unshiftLeft(v, self.t, self.c)
+        v = self.unshiftLeft(v, self.s, self.b)
+        v = self.unshiftRight(v, self.u)
         return v
 
     def go(self, outputs, forward=True):
