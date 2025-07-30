@@ -73,3 +73,31 @@ x &= self.d
 
 **Ý nghĩa:** cải thiện phân bố bit trên đầu ra (đạt các tính chất cân bằng k-distribution).
 
+### Cracking
+Thuật toán như sau: nhận **ít nhất 624** giá trị 32-bit đã **tempered** do MT19937 sinh ra, viết hàm **untemper** để lấy lại 624 phần tử trạng thái `mt[0...623]`, rồi dựng lại **state tuple** đúng format của `random.Random` để từ đó ta tiếp tục sinh đúng chuỗi.
+
+Vì MT19937 có kích thước trạng thái `n = 624` 32-bit, nên khi biết đủ 624 đầu ra (và thứ tự của chúng) thì ta hoàn toàn có thể khôi phục toàn bộ trạng thái.
+
+```python
+def unshiftRight(self, x, shift):
+    res = x
+    for i in range(32):
+        res = x ^ res >> shift
+    return res
+
+def unshiftLeft(self, x, shift, mask):
+    res = x
+    for i in range(32):
+    res = x ^ (res << shift & mask)
+    return res
+
+def untemper(self, v):
+    """ Reverses the tempering which is applied to outputs of MT19937 """
+
+    v = self.unshiftRight(v, self.l)
+    v = self.unshiftLeft(v, self.t, self.c)
+    v = self.unshiftLeft(v, self.s, self.b)
+    v = self.unshiftRight(v, self.u)
+    return v
+```
+

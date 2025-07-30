@@ -95,7 +95,7 @@ def test_PythonMT19937Recover():
     """Just a testcase to ensure correctness"""
     mtb = MT19937Recover()
 
-    r1 = random.Random(0x31337)
+    r1 = random.Random(0)
 
     # just some discarded random numbers to move internal state forward
     [r1.getrandbits(32) for _ in range(1234)]
@@ -105,7 +105,8 @@ def test_PythonMT19937Recover():
 
     r2 = mtb.go(n)
 
-    assert r1.getrandbits(32) == r2.getrandbits(32)
+    for _ in range(100):
+        assert r1.getrandbits(32) == r2.getrandbits(32)
 
 
 test_PythonMT19937Recover()
