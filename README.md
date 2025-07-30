@@ -18,7 +18,7 @@ Ban đầu khởi tạo `mt[0] = seed`.
 Với $i = 1...n-1$:
 
 $$
-mt_i = (f \cdot (mt_{i-1} \oplus (mt_{i-1} >> (w-2))) + i) \pmod {2^w}
+\text{mt}[i] = (f \cdot (\text{mt}[i-1] \oplus (\text{mt}[i-1] >> (w-2))) + i) \pmod {2^w}
 $$
 
 Đặt `index = n` để lần đầu rút sẽ kích hoạt `twist()` luôn.
@@ -34,8 +34,9 @@ Với mỗi $i = 0...n-1$:
 1. Ghép 1 bit cao của `mt[i]` và 31 bit thấp của `mt[(i+1) $ n]`:
 
 $$
-x = (\text{mt}[i] \,\&\, \text{upper}) \;\big|\; (\text{mt}[(i+1)\bmod n] \,\&\, \text{lower})
+x = (\mathrm{mt}[i] \,\&\, \mathrm{upper}) \;\mid\; (\mathrm{mt}[(i+1)\bmod n] \,\&\, \mathrm{lower})
 $$
+
 
 2. Dịch phải 1 bit:
 
@@ -52,7 +53,7 @@ $$
 4. Cập nhật phần tử mới:
 
 $$
-mt_i = mt_{(i+m) \ mod \ n} \oplus xA
+\text{mt}[i] = \text{mt}[(i+1)\bmod n] \oplus xA
 $$
 
 Ý nghĩa: từ `mt[0..n-1]` hiện tại, sinh ra 624 trạng thía mới cho lần rút tiếp theo. Mỗi trạng thái mới là XOR của một trạng thái "cách nhau $m$ đơn vị" và sử dụng $upper, lower$ sao đó XOR với $a$ làm cho trạng thái mới đảm bảo tính hỗn loạn.
