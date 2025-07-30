@@ -55,10 +55,10 @@ $$
 \text{mt}[i] = \text{mt}[(i+1)\bmod n] \oplus xA
 $$
 
-**Ý nghĩa:** từ `mt[0..n-1]` hiện tại, sinh ra 624 trạng thía mới cho lần rút tiếp theo. Mỗi trạng thái mới là XOR của một trạng thái "cách nhau $m$ đơn vị" và sử dụng $upper, lower$ sao đó XOR với $a$ làm cho trạng thái mới đảm bảo tính hỗn loạn.
+**Ý nghĩa:** từ `mt[0..n-1]` hiện tại, sinh ra 624 trạng thía mới cho lần rút tiếp theo. Mỗi trạng thái mới là XOR của một trạng thái "cách nhau $m$ đơn vị" và sử dụng `upper, lower` sao đó XOR với $a$ làm cho trạng thái mới đảm bảo tính hỗn loạn.
 
 ### Tempering
-Từ `mt[index]` tiếp tục đi qua các bước XOR + shift + mask với các tham số cố định:
+Từ `mt[index]` tiếp tục đi qua các bước (XOR + shift + mask) với các tham số cố định:
 
 ```
 x = self.mt[self.index]
@@ -66,6 +66,7 @@ x ^= x >> self.u
 x ^= (x << self.s) & self.b
 x ^= (x << self.t) & self.c
 x ^= x >> self.l
+x &= self.d
 ```
 
 **Ý nghĩa:** cải thiện phân bố bit trên đầu ra (đạt các tính chất cân bằng k-distribution).

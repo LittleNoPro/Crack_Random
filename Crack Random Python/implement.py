@@ -32,6 +32,7 @@ class MT19937:
         x ^= (x << self.s) & self.b
         x ^= (x << self.t) & self.c
         x ^= x >> self.l
+        x &= self.d
 
         self.index += 1
         return self._int32(x)
