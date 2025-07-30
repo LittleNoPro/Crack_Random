@@ -34,7 +34,7 @@ Với mỗi $i = 0...n-1$:
 1. Ghép 1 bit cao của `mt[i]` và 31 bit thấp của `mt[(i+1) $ n]`:
 
 $$
-x = (mt_i \ \& \ upper) \ | \ (mt_{(i+1) \ mod \ n} \ \& \ lower)
+x = (\text{mt}[i] \,\&\, \text{upper}) \;\big|\; (\text{mt}[(i+1)\bmod n] \,\&\, \text{lower})
 $$
 
 2. Dịch phải 1 bit:
@@ -68,3 +68,4 @@ x ^= (x << self.t) & self.c
 x ^= x >> self.l
 ```
 
+Ý nghĩa: cải thiện phân bố bit trên đầu ra (đạt các tính chất cân bằng k-distribution).
