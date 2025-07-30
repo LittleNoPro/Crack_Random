@@ -78,6 +78,8 @@ Thuật toán như sau: nhận **ít nhất 624** giá trị 32-bit đã **tempe
 
 Vì MT19937 có kích thước trạng thái `n = 624` 32-bit, nên khi biết đủ 624 đầu ra (và thứ tự của chúng) thì ta hoàn toàn có thể khôi phục toàn bộ trạng thái.
 
+Ta đã biết, `tempering` là một hàm **song ánh**, nó chỉ đơn giản là XOR với các bản dịch bit của chính nó. Vì vậy, nếu biết đầu ra, ta có thể khôi phục lại trạng thái gốc bằng cách `untemper` theo thứ tự ngược lại.
+
 ```python
 def unshiftRight(self, x, shift):
     res = x
@@ -101,3 +103,13 @@ def untemper(self, v):
     return v
 ```
 
+- Với phép **dịch phải shift**, bit ở vị trí `i` của `res` phụ thuộc vào bit `i` của `x` và bit `i+k` của `res` (đã biết khi ta giải từ MSB -> LSB). Lặp lại ~32 lần để đảm bảo các bit phụ thuộc lan truyền hết đến các LSB. (thực tế ta chỉ cần ceil(32/shift) lần lặp, nhưng để 32 luôn cho tổng quát).
+- Với phép **dịch trái shift**, tương tự nhưng ta giải ngược từ LSB -> MSB và có thêm `mask` để triệt tiêu các bit không ảnh hưởng.
+
+Sau khi khôi phục lại được `mt[0..623]` rồi, phần còn lại là tìm `index` và dựng lại state đúng định dạng của `random.Random` để tiếp tục sinh ra đúng chuỗi. Ta đã biết, MT19937 dùng con trỏ `index` chỉ vào phần tử kết tiếp sẽ được xuất ra (sau `tempering`). `index` $\in$ [0, 1, 2,...,624], `index = 624` có nghĩa là đã dùng hết 624 giá trị trong trạng thái hiện tại, lần rút kế tiếp sẽ thực hiện **twist** và gán `index = 0`.
+
+Có 2 trường hợp xảy ra:
+- **Có ít nhất 625 đầu ra liên tiếp:** ta sẽ brute-force `index` bằng cách thử tất cả các khả năng [1 ... 625] rồi kiểm tra đầu ra kế tiếp có khớp với `ouputs[624]` không.
+- **Chỉ có đúng 624 đầu ra:** ta giả sử 624 đầu ra liên tiếp đó bắt đầu ngay sau một lần **twist**, khi đó `index = 624`. Ngược lại, chuỗi sau đó sẽ bị lệch.
+
+Sau khi tìm được `index` rồi thì ta xây dựng state tuple `(3, tuple(ivals + [index]), None)` và `setstate` cho hàm `random.Random`.
