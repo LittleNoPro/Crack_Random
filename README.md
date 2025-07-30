@@ -113,3 +113,6 @@ Có 2 trường hợp xảy ra:
 - **Chỉ có đúng 624 đầu ra:** ta giả sử 624 đầu ra liên tiếp đó bắt đầu ngay sau một lần **twist**, khi đó `index = 624`. Ngược lại, chuỗi sau đó sẽ bị lệch.
 
 Sau khi tìm được `index` rồi thì ta xây dựng state tuple `(3, tuple(ivals + [index]), None)` và `setstate` cho hàm `random.Random`.
+
+
+## 2.
