@@ -34,9 +34,7 @@ Với mỗi $i = 0...n-1$:
 1. Ghép 1 bit cao của `mt[i]` và 31 bit thấp của `mt[(i+1) $ n]`:
 
 $$
-\begin{gather}
-x = (\text{mt}[i] \ \land \ \text{upper}) \;\big|\; (\text{mt}[(i+1)\bmod n] \ \land \ \text{lower})
-\end{gather}
+x = (\text{mt}[i] \ \land \ \text{upper}) \ \big| \ (\text{mt}[(i+1)\bmod n] \ \land \ \text{lower})
 $$
 
 2. Dịch phải 1 bit:
