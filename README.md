@@ -35,7 +35,7 @@ Với mỗi $i = 0...n-1$:
 
 $$
 \begin{gather}
-x = (\text{mt}[i] \ \& \ \text{upper}) \;\big|\; (\text{mt}[(i+1)\bmod n] \,\&\, \text{lower})
+x = (\text{mt}[i] \ \land \ \text{upper}) \;\big|\; (\text{mt}[(i+1)\bmod n] \ \land \ \text{lower})
 \end{gather}
 $$
 
@@ -48,7 +48,7 @@ $$
 3. Nếu $x$ lẻ, twist bằng ma trận $a$:
 
 $$
-(x \ \& \ 1) = 1 \Rightarrow xA = xA \oplus a
+(x \ \land \ 1) = 1 \Rightarrow xA = xA \oplus a
 $$
 
 4. Cập nhật phần tử mới:
