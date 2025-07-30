@@ -35,7 +35,7 @@ Với mỗi $i = 0...n-1$:
 
 $$
 \begin{gather}
-x = (\text{mt}[i] \,\&\, \text{upper}) \;\big|\; (\text{mt}[(i+1)\bmod n] \,\&\, \text{lower})
+x = (\text{mt}[i] \ \& \ \text{upper}) \;\big|\; (\text{mt}[(i+1)\bmod n] \,\&\, \text{lower})
 \end{gather}
 $$
 
