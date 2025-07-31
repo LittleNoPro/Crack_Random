@@ -5,6 +5,8 @@ class BashRandom:
         self.seed = seed
         self.last = 0
         self.is_old = is_old
+        self.a = 16807
+        self.m = 0x7fffffff  # 2^31 - 1
 
     def next_16(self) -> int:
         self.next_seed()
@@ -33,10 +35,7 @@ class BashRandom:
         if self.seed == 0:
             self.seed = 123459876
 
-        h = self.seed // 127773
-        l = self.seed - (127773 * h)
-        t = 16807 * l - 2836 * h
-        self.seed = (t + 0x7fffffff) if t < 0 else t
+        self.seed = (self.seed * self.a) % self.m
         return self.seed
 
     def next_seed_n(self, n: int) -> list:

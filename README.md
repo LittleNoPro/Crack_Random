@@ -129,15 +129,19 @@ Hàm `$RANDOM` của Bash sử dụng Park-Miller LCG để sinh ra dãy số ng
 ### Thuật toán:
 Nhận đầu vào là một giá trị `seed`, nếu như `seed = 0` thì gán `seed = 123459876`.
 
-
 ```python
 def next_seed(self) -> int:
     if self.seed == 0:
         self.seed = 123459876
 
-    h = self.seed // 127773
-    l = self.seed - (127773 * h)
-    t = 16807 * l - 2836 * h
-    self.seed = (t + 0x7fffffff) if t < 0 else t
+    self.seed = (self.seed * self.a) % self.m
     return self.seed
 ```
+
+Áp dụng công thức Park-Miller LCG để sinh ra `seed` mới.
+
+Sau khi có `seed` rồi, hàm random sẽ trả về:
+- `result = self.seed & 0x7fff`: chỉ lấy 15 bit thấp nhất của `seed`.
+- `result = ((self.seed >> 16) ^ (self.seed & 0xffff)) & 0x7fff`: XOR 15 bit cao với 16 bit thấp, sau đó lấy 15 bit thấp nhất.
+
+### Cracking
