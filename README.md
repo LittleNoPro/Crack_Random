@@ -145,3 +145,19 @@ Sau khi có `seed` rồi, hàm random sẽ trả về:
 - `result = ((self.seed >> 16) ^ (self.seed & 0xffff)) & 0x7fff`: XOR 15 bit cao với 16 bit thấp, sau đó lấy 15 bit thấp nhất.
 
 ### Cracking
+Đặc diểm của hàm LCG là ta không có công thực trực tiếp để từ `output` tìm lại được `seed`. Do đó kỹ thuật crack của hàm `$RANDOM` sẽ là thử từng khả năng của `seed`, mô phỏng lại quá trình `BashRandom`, rồi so sánh kết quả với chuỗi `output` đã biết. Nếu khớp hoàn toàn thì đó là `seed` mà ta cần tìm.
+
+Vì `seed` có độ lớn là **32-bit**, nếu brute-force bình thường thì rất lâu mới chạy ra nên ta sử dụng bộ **xử lí song song (multiprocessing)** của Python để chia nhỏ quá trình tính toán ra. `seed` được duyệt theo các `chunk` giúp tối ưu hóa bộ nhớ và giảm độ trễ trong xử lý.
+
+Cách thực hiện cụ thể như sau:
+- Chia toàn bộ không gian `seed` thành nhiều đoạn nhỏ.
+- Mỗi đoạn sẽ được giao một tiến trình xử lí riêng (song song).
+- Trong mỗi tiến trình:
+  - Duyệt qua từng `seed` trong đoạn.
+  - Khởi tạo `BashRandom` với `seed` hiện tại.
+  - Sinh ra các số liên tiếp từ hàm `next_16()` và so sánh với chuỗi `output`.
+  - Nếu khớp thì dừng lại và trả về `seed`.
+
+Đối với **cracker** dùng 2 hoặc 1 số đầu ra:
+- Làm tương tự duyệt toàn bộ không gian `seed`, nhưng thay vì tìm chính xác 1 `seed` đúng, ta sẽ gửi tất cả các `seed` phù hợp vào `queue`.
+- Điều này giúp ta có thể tìm ra nhiều `seed` có thể tạo cùng một chuỗi đầu ra (do hàm random không phải luôn là 1-1).
