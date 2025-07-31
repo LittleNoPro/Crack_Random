@@ -115,4 +115,29 @@ Có 2 trường hợp xảy ra:
 Sau khi tìm được `index` rồi thì ta xây dựng state tuple `(3, tuple(ivals + [index]), None)` và `setstate` cho hàm `random.Random`.
 
 
-## 2.
+## 2. Lehmer random number generator (Bash)
+**Lehmer random number generator** hay còn được gọi là **Park-Miller random number generator** là một loại **linear congruential generator (LCG)** hoạt động trong nhóm nhân các số nguyên modulo $N$. Có công thức là:
+
+$$
+X_{k+1} = a \cdot X_k \mod m
+$$
+
+Trong đó modulo $m$ là một số nguyên tố hoặc là lũy thừa của một số nguyên tố, hệ số nhân $a$ là một phần tử có bậc là $m$ và $seed = X_0$ nguyên tố cùng nhau với $m$. Tham khảo thêm ở [đây](https://en.wikipedia.org/wiki/Lehmer_random_number_generator)
+
+Hàm `$RANDOM` của Bash sử dụng Park-Miller LCG để sinh ra dãy số ngẫu nhiên. Sau mỗi bước, cập nhật `seed` bằng công thức LCG, kết quả của `$RANDOM` là **15 bit cuối** của `seed` (Bash 5.0) hoặc là một biến thể XOR (Bash >= 5.1).
+
+### Thuật toán:
+Nhận đầu vào là một giá trị `seed`, nếu như `seed = 0` thì gán `seed = 123459876`.
+
+
+```python
+def next_seed(self) -> int:
+    if self.seed == 0:
+        self.seed = 123459876
+
+    h = self.seed // 127773
+    l = self.seed - (127773 * h)
+    t = 16807 * l - 2836 * h
+    self.seed = (t + 0x7fffffff) if t < 0 else t
+    return self.seed
+```
