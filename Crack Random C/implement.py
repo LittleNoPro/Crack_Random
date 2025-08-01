@@ -11,13 +11,13 @@ class RandomC:
         for i in range(31, 34):
             self.r[i] = self.r[i - 31]
         for i in range(34, 344):
-            self.r[i] = (self.r[i - 31] + self.r[i - 3]) % 2**32
+            self.r[i] = (self.r[i - 31] + self.r[i - 3]) % 4294967296
         for i in range(344, self.max_val):
-            self.r[i] = (self.r[i - 31] + self.r[i - 3]) % 2**32
+            self.r[i] = (self.r[i - 31] + self.r[i - 3]) % 4294967296
 
     def random(self):
-        return [((self.r[i] >> 1) & 0xFFFFFFFF) for i in range(344, self.max_val)]
+        return [((self.r[i] >> 1) % 4294967296) for i in range(344, self.max_val)]
 
 if __name__ == "__main__":
-    rand_gen = RandomC(seed = 100, max_val = 344 + 50)
+    rand_gen = RandomC(seed = 1, max_val = 344 + 50)
     print(rand_gen.random())

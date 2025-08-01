@@ -12,7 +12,7 @@
 
 Quy trình của MT19937 gồm 3 phần chính:
 
-### Thuật toán:
+### Thuật toán
 
 #### Initialization (seeding)
 Ban đầu khởi tạo `mt[0] = seed`.
@@ -126,7 +126,7 @@ Trong đó modulo $m$ là một số nguyên tố hoặc là lũy thừa của m
 
 Hàm `$RANDOM` của Bash sử dụng Park-Miller LCG để sinh ra dãy số ngẫu nhiên. Sau mỗi bước, cập nhật `seed` bằng công thức LCG, kết quả của `$RANDOM` là **15 bit cuối** của `seed` (Bash 5.0) hoặc là một biến thể XOR (Bash >= 5.1).
 
-### Thuật toán:
+### Thuật toán
 Nhận đầu vào là một giá trị `seed`, nếu như `seed = 0` thì gán `seed = 123459876`.
 
 ```python
@@ -165,4 +165,20 @@ Cách thực hiện cụ thể như sau:
 ## 3. GLIBC random number generator (C)
 Bộ sinh số ngẫu nhiên `random()` trong thư viện **glibc** sử dụng thuật toán **linear additive feedback** (phản hồi cộng tuyến tính), thường được gọi là **lagged Fibonacci generator**. Trên thực tế, quá trình sinh số sau khi khởi tạo hoàn toàn tuyến tính trong modulo $2^{32}$. Phần duy nhất có tính phi tuyến nhẹ là khâu khởi tạo (seeding), sử dụng bộ sinh MINSTD với modulo $2^{32} - 1$. Do đặc điểm tuyến tính này, `random()` trong **glibc** không phù hợp cho mục đích mật mã, nhưng lại hiệu quả và đủ tốt cho các ứng dụng giả lập, thống kê, ...
 
-### Thuật toán:
+### Thuật toán
+Các hằng số được sử dụng trong thuật toán:
+- $2147483647 = 2^{31} - 1$
+- $4294967296 = 2^{32}$
+
+Với một giá trị `seed` được cho ban đầu, khởi tạo vector $r_0, r_1,...,r_33$ như sau:
+- $r_0 = seed$
+- $r_i = (16807 * r_{i-1}) \bmod 2147483647$ $(\text{for} \ i = 1...30)$
+- $r_i = r_{i-31}$ $(\text{for} \ i = 31...33)$
+
+Sau phần khởi tạo, dãy chính được sinh bằng vòng lặp **linear feedback**:
+- $r_i = (r_{i-3} + r_{i-31}) \bmod 4294967296$  $(\text{for} \ i \ge 34)$
+
+Kết quả của lần `random()` thứ $i$ sẽ là:
+- $\text{output}_i = r_{i+344} >> 1$
+
+Xem đầy đủ tại [đây](https://www.mscs.dal.ca/~selinger/random/).
