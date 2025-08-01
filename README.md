@@ -161,3 +161,8 @@ Cách thực hiện cụ thể như sau:
 Đối với **cracker** dùng 2 hoặc 1 số đầu ra:
 - Làm tương tự duyệt toàn bộ không gian `seed`, nhưng thay vì tìm chính xác 1 `seed` đúng, ta sẽ gửi tất cả các `seed` phù hợp vào `queue`.
 - Điều này giúp ta có thể tìm ra nhiều `seed` có thể tạo cùng một chuỗi đầu ra (do hàm random không phải luôn là 1-1).
+
+## 3. GLIBC random number generator (C)
+Bộ sinh số ngẫu nhiên `random()` trong thư viện **glibc** sử dụng thuật toán **linear additive feedback** (phản hồi cộng tuyến tính), thường được gọi là **lagged Fibonacci generator**. Trên thực tế, quá trình sinh số sau khi khởi tạo hoàn toàn tuyến tính trong modulo $2^{32}$. Phần duy nhất có tính phi tuyến nhẹ là khâu khởi tạo (seeding), sử dụng bộ sinh MINSTD với modulo $2^{32} - 1$. Do đặc điểm tuyến tính này, `random()` trong **glibc** không phù hợp cho mục đích mật mã, nhưng lại hiệu quả và đủ tốt cho các ứng dụng giả lập, thống kê, ...
+
+### Thuật toán:
