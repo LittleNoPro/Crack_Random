@@ -170,7 +170,7 @@ Các hằng số được sử dụng trong thuật toán:
 - $2147483647 = 2^{31} - 1$
 - $4294967296 = 2^{32}$
 
-Với một giá trị `seed` được cho ban đầu, khởi tạo vector $r_0, r_1,...,r_33$ như sau:
+Với một giá trị `seed` được cho ban đầu, khởi tạo vector $r_0, r_1,...,r_{33}$ như sau:
 - $r_0 = seed$
 - $r_i = (16807 * r_{i-1}) \bmod 2147483647$ $(\text{for} \ i = 1...30)$
 - $r_i = r_{i-31}$ $(\text{for} \ i = 31...33)$
@@ -179,6 +179,6 @@ Sau phần khởi tạo, dãy chính được sinh bằng vòng lặp **linear f
 - $r_i = (r_{i-3} + r_{i-31}) \bmod 4294967296$  $(\text{for} \ i \ge 34)$
 
 Kết quả của lần `random()` thứ $i$ sẽ là:
-- $\text{output}_i = r_{i+344} >> 1$
+- $output_i = r_{i+344} >> 1$
 
 Xem đầy đủ tại [đây](https://www.mscs.dal.ca/~selinger/random/).
