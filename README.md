@@ -182,3 +182,5 @@ Kết quả của lần `random()` thứ $i$ sẽ là:
 - $output_i = r_{i+344} >> 1$
 
 Xem đầy đủ tại [đây](https://www.mscs.dal.ca/~selinger/random/).
+
+### Cracking
