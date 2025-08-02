@@ -76,7 +76,6 @@ def recover_seed(outputs):
     return all_states[0] if all_states[0] is not None else None
 
 
-
 if __name__ == "__main__":
     rand_gen = RandomC(seed = 1, max_val = 2000)
     outputs = rand_gen.random()
