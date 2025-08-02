@@ -184,3 +184,4 @@ Kết quả của lần `random()` thứ $i$ sẽ là:
 Xem đầy đủ chi tiết tại [đây](https://www.mscs.dal.ca/~selinger/random/).
 
 ### Cracking
+Thuật toán crack hàm `random` của **glibc** hoạt động theo ba giai đoạn chính.
