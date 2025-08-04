@@ -185,3 +185,5 @@ Xem đầy đủ chi tiết tại [đây](https://www.mscs.dal.ca/~selinger/rand
 
 ### Cracking
 Thuật toán crack hàm `random` của **glibc** hoạt động theo ba giai đoạn chính.
+
+### ...
