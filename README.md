@@ -187,10 +187,20 @@ Xem đầy đủ chi tiết tại [đây](https://www.mscs.dal.ca/~selinger/rand
 Dễ thấy, các điểm yếu có thể khai thác trong cách implement `random()` của glibc như sau:
 - Công thức `state[i] = state[i - 3] + state[i - 31]` là tuyến tính và được áp dụng liên tục.
 - `Output` chỉ bị mất 1 bit cuối, nên một giá trị `state[i]` chỉ có duy nhất 2 khả năng (lsb = 0 hoặc 1).
-- Nếu ta biết **2 trong 3** giá trị `(state[i], state[i - 3], state[i - 31])`, ta hoàn toàn có thể tính được giá trị còn lại.
+- Nếu ta biết **2 trong 3** giá trị `(state[i], state[i - 3], state[i - 31])`, ta hoàn toàn có thể tính được giá trị còn lại. (*)
 - Với đủ các `output` liên tiếp $\Rightarrow$ có thể lan truyền để khôi phục lại toàn bộ mảng trạng thái.
 
 Từ đó, thuật toán khôi phục `seed` như sau:
 1. Từ `output` suy ngược lại một phần trạng thái
     - Nếu có đủ 3 giá trị liên quan (`output[i, i-3, i-31]`) và công thức không khớp, ta có thể đoán được bit thấp bị mất, rồi ghép lại thành trạng thái gốc (chưa dịch phải).
     - Làm như vậy cho toàn bộ dữ liệu thu được để có một mảng trạng thái, trong đó nhiều phần tử vẫn chưa biết (`None`).
+2. Khôi phục giai đoạn khởi tạo (344 trạng thái).
+    - Từ các trạng thái đã biết, chạy ngược công thức cộng để điền thêm các giá trị còn thiếu trong 344 trạng thái đầu tiên. (Theo nhận xét (*)).
+3. Tìm một giá trị thuộc 31 trạng thái LCG gốc.
+    - 31 trạng thái đầu tiên được tính bằng LCG, nên nếu tìm được một giá trị trong nhóm này, ta có thể tính ra toàn bộ các giá trị còn lại bằng công thức LCG.
+    - Giả sử ta tìm được một giá trị có vị trị là `base_idx`, sử dụng công thức:
+    $$
+    \text{state}_i = 16807^{i-\text{baseidx}} * \text{state}_{baseidx} \pmod {2147483647}
+    $$
+    - Ta sẽ khôi phục lại các trạng thái trước và sau `base_idx`
+
