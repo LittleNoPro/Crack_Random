@@ -163,7 +163,7 @@ Cách thực hiện cụ thể như sau:
 - Điều này giúp ta có thể tìm ra nhiều `seed` có thể tạo cùng một chuỗi đầu ra (do hàm random không phải luôn là 1-1).
 
 ## 3. GLIBC random number generator (C)
-Bộ sinh số ngẫu nhiên `random()` trong thư viện **glibc** sử dụng thuật toán **linear additive feedback** (phản hồi cộng tuyến tính), thường được gọi là **lagged Fibonacci generator**. Trên thực tế, quá trình sinh số sau khi khởi tạo hoàn toàn tuyến tính trong modulo $2^{32}$. Phần duy nhất có tính phi tuyến nhẹ là khâu khởi tạo (seeding), sử dụng bộ sinh MINSTD với modulo $2^{32} - 1$. Do đặc điểm tuyến tính này, `random()` trong **glibc** không phù hợp cho mục đích mật mã, nhưng lại hiệu quả và đủ tốt cho các ứng dụng giả lập, thống kê, ...
+Bộ sinh số ngẫu nhiên `random()` trong thư viện **glibc** sử dụng thuật toán **linear additive feedback** (phản hồi cộng tuyến tính), thường được gọi là **lagged Fibonacci generator**. Trên thực tế, quá trình sinh số sau khi khởi tạo hoàn toàn tuyến tính trong modulo $2^{32}$. Phần duy nhất có tính phi tuyến nhẹ là khâu khởi tạo (seeding), sử dụng bộ sinh MINSTD với modulo $2^{31} - 1$. Do đặc điểm tuyến tính này, `random()` trong **glibc** không phù hợp cho mục đích mật mã, nhưng lại hiệu quả và đủ tốt cho các ứng dụng giả lập, thống kê, ...
 
 ### Thuật toán
 Các hằng số được sử dụng trong thuật toán:
@@ -191,3 +191,6 @@ Dễ thấy, các điểm yếu có thể khai thác trong cách implement `rand
 - Với đủ các `output` liên tiếp $\Rightarrow$ có thể lan truyền để khôi phục lại toàn bộ mảng trạng thái.
 
 Từ đó, thuật toán khôi phục `seed` như sau:
+1. Từ `output` suy ngược lại một phần trạng thái
+    - Nếu có đủ 3 giá trị liên quan (`output[i, i-3, i-31]`) và công thức không khớp, ta có thể đoán được bit thấp bị mất, rồi ghép lại thành trạng thái gốc (chưa dịch phải).
+    - Làm như vậy cho toàn bộ dữ liệu thu được để có một mảng trạng thái, trong đó nhiều phần tử vẫn chưa biết (`None`).
