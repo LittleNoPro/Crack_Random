@@ -204,4 +204,5 @@ $$
 init_i = 16807^{i-baseidx} * init_{baseidx} \pmod {2147483647}
 $$
 
-4.
+4. Ghép tất cả và lan truyền để điền các giá trị thiếu.
+    - Sau khi có được 31 giá trị đầu và một phần 344 trạng thái đầu, ghép tất cả vào một mảng trạng thái mới. Dùng lại công thức cộng để lan truyền, điển nốt các giá trị chưa biết.
