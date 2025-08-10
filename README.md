@@ -199,8 +199,10 @@ Từ đó, thuật toán khôi phục `seed` như sau:
 3. Tìm một giá trị thuộc 31 trạng thái LCG gốc.
     - 31 trạng thái đầu tiên được tính bằng LCG, nên nếu tìm được một giá trị trong nhóm này, ta có thể tính ra toàn bộ các giá trị còn lại bằng công thức LCG.
     - Giả sử ta tìm được một giá trị có vị trị là `base_idx`, sử dụng công thức:
+
     $$
     \text{state}_i = 16807^{i-\text{baseidx}} * \text{state}_{baseidx} \pmod {2147483647}
     $$
+
     - Ta sẽ khôi phục lại các trạng thái trước và sau `base_idx`
 
