@@ -201,6 +201,7 @@ Từ đó, thuật toán khôi phục `seed` như sau:
     - Giả sử ta tìm được một giá trị có vị trị là `base_idx`, ta có thể khôi phục được các trạng thái trước và sau `base_idx` bằng cách sử dụng công thức:
 
 $$
-state_i = 16807^{i-baseidx} * state_{baseidx} \pmod {2147483647}
+init_i = 16807^{i-baseidx} * init_{baseidx} \pmod {2147483647}
 $$
 
+4.
