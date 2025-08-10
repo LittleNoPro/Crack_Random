@@ -184,6 +184,10 @@ Kết quả của lần `random()` thứ $i$ sẽ là:
 Xem đầy đủ chi tiết tại [đây](https://www.mscs.dal.ca/~selinger/random/).
 
 ### Cracking
-Thuật toán crack hàm `random` của **glibc** hoạt động theo ba giai đoạn chính.
+Dễ thấy, các điểm yếu có thể khai thác trong cách implement `random()` của glibc như sau:
+- Công thức `state[i] = state[i - 3] + state[i - 31]` là tuyến tính và được áp dụng liên tục.
+- `Output` chỉ bị mất 1 bit cuối, nên một giá trị `state[i]` chỉ có duy nhất 2 khả năng (lsb = 0 hoặc 1).
+- Nếu ta biết **2 trong 3** giá trị `(state[i], state[i - 3], state[i - 31])`, ta hoàn toàn có thể tính được giá trị còn lại.
+- Với đủ các `output` liên tiếp $\Rightarrow$ có thể lan truyền để khôi phục lại toàn bộ mảng trạng thái.
 
-### Continue ...
+Từ đó, thuật toán khôi phục `seed` như sau:
