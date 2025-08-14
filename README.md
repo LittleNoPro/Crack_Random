@@ -210,7 +210,7 @@ $$
 ## 4. Xorshift128+ (JavaScript)
 `Math.random()` là hàm sinh số ngẫu nhiên trả về một số thực dương, lớn hơn hoặc bằng $0$ nhưng nhỏ hơn $1$, được chọn ngẫu nhiên hoặc bán ngẫu nhiên với phân phối gần như đồng đều trong phạm vi đó, sử dụng thuật toán hoặc chiến lược phụ thuộc vào việc implement. Trong engine `V8`, `Math.random()` hiện tại được triển khai dựa trên thuật toán **xorshift128+**.
 
-Trong V8, `Math.random()` sẽ dùng PRNG `xorshift128+` để sinh ra **64 số nguyên 64-bit** một lúc. Sau đó lưu vào một mảng `cache` 64 phần tử. Mỗi lần gọi hàm `random()` thì lấy 1 phần tử trong `cache`, chuyển thành double rồi trả về kết quả đó. Khi `cache` hết giá trị, chạy lại `xorshift128+` để refill lại 64 giá trị mới.
+Trong V8, `Math.random()` sẽ dùng PRNG `xorshift128+` để sinh ra **64 số nguyên 64-bit** một lúc. Sau đó lưu vào bộ nhớ đệm `cache` 64 phần tử. Mỗi lần gọi hàm `random()` thì lấy 1 phần tử trong `cache`, chuyển thành double rồi trả về kết quả đó. Khi `cache` hết giá trị, chạy lại `xorshift128+` để refill lại 64 giá trị mới.
 
 Chi tiết hơn:
 
@@ -226,3 +226,10 @@ def xs128(state0, state1):
     s1 ^= (s0 >> 26) & mask
     return s0, s1
 ```
+
+`V8` không gọi PRNG mỗi lần mà:
+- Khi bộ nhớ đệm `cache` trống $\Rightarrow$ chạy PRNG 64 lần $\Rightarrow$ nạp 64 số nguyên vào `cache[0..63]`.
+- `cache_idx` bắt đầu vị trí $63$ (cuối mảng).
+- Mỗi lần gọi `Math.random()`:
+  - Lấy `cache[cache_idx]`, giảm `cache_idx` đi 1 đơn vị.
+  - Nếu `cache_idx < 0` thì refill lại `cache`.
