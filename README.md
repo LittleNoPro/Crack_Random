@@ -233,3 +233,14 @@ def xs128(state0, state1):
 - Mỗi lần gọi `Math.random()`:
   - Lấy `cache[cache_idx]`, giảm `cache_idx` đi 1 đơn vị.
   - Nếu `cache_idx < 0` thì refill lại `cache`.
+
+Các số nguyên 64-bit từ `xorshift128+` sẽ được chuyển đổi thành số thực `[0, 1)` bằng cách:
+1. Bỏ đi 12 bit thấp nhất:
+    - Trong IEEE754 double-precision (64-bit), phần mantissa chỉ có 52 bit.
+    - `V8` không dùng toàn bộ 52 bit mà bỏ hẳn 12 bit thấp nhất của số nguyên để tránh các vấn đề về tính ngẫu nhiên ở các bit cuối của `xorshift128+`.
+2. Chèn bit mũ để tạo số trong `[1, 2)`.
+    - Một số double có dạng: `sign (1 bit) | exponent (11 bit) | mantissa (52 bit)`.
+    - `V8` đặt `exponent = 0x3FF` để biểu diễn số `1.xxxxx...` trong chuẩn IEEE754. Phần mantissa được lấp đầy bởi 52 bit được giữ lại của `state0`.
+3. Chuyển bit sang double
+    - Sau khi gộp các bit `exponent` và `mantissa` vào một giá trị 64-bit, `V8` ép kiểu nó sang `double`. Kết quả thu được nằm trong khoảng `[1, 2)`, ta trừ nó đi $1$ đơn vị để đưa nó về đúng phạm vi kết quả của `Math.random()`.
+
