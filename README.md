@@ -212,3 +212,17 @@ $$
 
 Trong V8, `Math.random()` sẽ dùng PRNG `xorshift128+` để sinh ra **64 số nguyên 64-bit** một lúc. Sau đó lưu vào một mảng `cache` 64 phần tử. Mỗi lần gọi hàm `random()` thì lấy 1 phần tử trong `cache`, chuyển thành double rồi trả về kết quả đó. Khi `cache` hết giá trị, chạy lại `xorshift128+` để refill lại 64 giá trị mới.
 
+Chi tiết hơn:
+
+PRNG `xorshift128+` lưu trạng thái 128-bit trong 2 biến 64-bit: `state0, state1`. Mỗi lần cập nhật, công thức của nó như sau:
+```python
+def xs128(state0, state1):
+    mask = (1 << 64) - 1
+    s1 = state0 & mask
+    s0 = state1 & mask
+    s1 ^= (s1 << 23) & mask
+    s1 ^= (s1 >> 17) & mask
+    s1 ^= s0
+    s1 ^= (s0 >> 26) & mask
+    return s0, s1
+```
