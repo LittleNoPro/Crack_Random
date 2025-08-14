@@ -208,3 +208,7 @@ $$
     - Sau khi có được 31 giá trị đầu và một phần 344 trạng thái đầu, ghép tất cả vào một mảng trạng thái mới. Dùng lại công thức cộng để lan truyền, điền nốt các giá trị chưa biết.
 
 ## 4. Xorshift128+ (JavaScript)
+`Math.random()` là hàm sinh số ngẫu nhiên trả về một số thực dương, lớn hơn hoặc bằng $0$ nhưng nhỏ hơn $1$, được chọn ngẫu nhiên hoặc bán ngẫu nhiên với phân phối gần như đồng đều trong phạm vi đó, sử dụng thuật toán hoặc chiến lược phụ thuộc vào việc implement. Trong engine `V8`, `Math.random()` hiện tại được triển khai dựa trên thuật toán **xorshift128+**.
+
+Trong V8, `Math.random()` sẽ dùng PRNG `xorshift128+` để sinh ra **64 số nguyên 64-bit** một lúc. Sau đó lưu vào một mảng `cache` 64 phần tử. Mỗi lần gọi hàm `random()` thì lấy 1 phần tử trong `cache`, chuyển thành double rồi trả về kết quả đó. Khi `cache` hết giá trị, chạy lại `xorshift128+` để refill lại 64 giá trị mới.
+
