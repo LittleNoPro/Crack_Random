@@ -260,5 +260,5 @@ def v8_from_double(double):
     return (struct.unpack('<Q', struct.pack('d', double + 1.0))[0] & 0xfffffffffffff)
 ```
 2. Biểu diễn `xs128` như ma trận tuyến tính trên `GF(2)`.
-- Mỗi bước của `xs128` đều có thể biểu diễn là một ma trận $A$ kích thước $128 \times 128$ trên $GF(2)$ sao cho $\text{state}_{t+1} = A * \text{state}_i$
+- Mỗi bước của `xs128` đều có thể biểu diễn là một ma trận $A$ kích thước $128 \times 128$ trên $GF(2)$ sao cho $\text{state}_{t+1} = A * \text{state}_i$.
 - Ta sẽ **symbolize** (sử dụng `BitVec`) cho nó chạy qua các bước `xs128` lần lượt để thu được các biểu thức tuyến tính của `output` theo các bit ban đầu.
