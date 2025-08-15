@@ -255,10 +255,6 @@ Chi tiết thuật toán:
 1. Khôi phục lại 52 bit MSB của các `state0`
 ```python
 def v8_from_double(double):
-    """
-    Convert a double back to a 64-bit integer.
-    The 12 least significant bits of the result cannot be recovered.
-    """
     if double == 1.0:
         return 0xffffffffffffffff
     return (struct.unpack('<Q', struct.pack('d', double + 1.0))[0] & 0xfffffffffffff)
