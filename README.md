@@ -249,14 +249,15 @@ Các số nguyên 64-bit từ `xorshift128` sẽ được chuyển đổi thành
 ### Cracking
 `xorshift128` là một hàm chỉ gồm các phép `XOR` và `Shift`, chúng đều tuyến tính trên `GF(2)` với trạng thái 64-bit. Tức là, mỗi bit của output sau một số bước sẽ là tổ hợp tuyến tính của các bit ban đầu.
 
-Vậy nên, nếu thu thập đủ số lượng output `double` liên tiếp, ta có nhiều phương trình tuyến tính trên 64 biến (các bit của trạng thái ban đầu). Giải hệ phương trình này trên `GF(2)` sẽ tìm được trạng thái ban đầu.
+Vậy nên, nếu thu thập đủ số lượng output `double` liên tiếp, ta có nhiều phương trình tuyến tính trên 128 biến (các bit của trạng thái ban đầu). Giải hệ phương trình này trên `GF(2)` sẽ tìm được trạng thái ban đầu.
 
 Chi tiết thuật toán:
-1. Khôi phục lại 52 bit MSB của các `state0`
+1. Khôi phục lại 52 bit MSB của các `state0`.
 ```python
 def v8_from_double(double):
     if double == 1.0:
         return 0xffffffffffffffff
     return (struct.unpack('<Q', struct.pack('d', double + 1.0))[0] & 0xfffffffffffff)
 ```
-
+2. Biểu diễn `xs128` như ma trận tuyến tính trên `GF(2)`.
+- Mỗi bước của `xs128` đều có thể biểu diễn là một ma trận $A$ kích thước $128 \times 128$ trên $GF(2)$ sao cho $\text{state}_{t+1} = A * \text{state}_i$
