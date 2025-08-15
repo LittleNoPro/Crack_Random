@@ -207,16 +207,16 @@ $$
 4. Ghép tất cả và lan truyền để điền các giá trị thiếu.
     - Sau khi có được 31 giá trị đầu và một phần 344 trạng thái đầu, ghép tất cả vào một mảng trạng thái mới. Dùng lại công thức cộng để lan truyền, điền nốt các giá trị chưa biết.
 
-## 4. Xorshift128+ (JavaScript)
-`Math.random()` là hàm sinh số ngẫu nhiên trả về một số thực dương, lớn hơn hoặc bằng $0$ nhưng nhỏ hơn $1$, được chọn ngẫu nhiên hoặc bán ngẫu nhiên với phân phối gần như đồng đều trong phạm vi đó, sử dụng thuật toán hoặc chiến lược phụ thuộc vào việc implement. Trong engine `V8`, `Math.random()` hiện tại được triển khai dựa trên thuật toán **xorshift128+**.
+## 4. Xorshift128 (JavaScript)
+`Math.random()` là hàm sinh số ngẫu nhiên trả về một số thực dương, lớn hơn hoặc bằng $0$ nhưng nhỏ hơn $1$, được chọn ngẫu nhiên hoặc bán ngẫu nhiên với phân phối gần như đồng đều trong phạm vi đó, sử dụng thuật toán hoặc chiến lược phụ thuộc vào việc implement. Trong engine `V8`, `Math.random()` hiện tại được triển khai dựa trên thuật toán **xorshift128**.
 
 ### Thuật toán
 
-Trong V8, `Math.random()` sẽ dùng PRNG `xorshift128+` để sinh ra **64 số nguyên 64-bit** một lúc. Sau đó lưu vào bộ nhớ đệm `cache` 64 phần tử. Mỗi lần gọi hàm `random()` thì lấy 1 phần tử trong `cache`, chuyển thành double rồi trả về kết quả đó. Khi `cache` hết giá trị, chạy lại `xorshift128+` để refill lại 64 giá trị mới.
+Trong V8, `Math.random()` sẽ dùng PRNG `xorshift128` để sinh ra **64 số nguyên 64-bit** một lúc. Sau đó lưu vào bộ nhớ đệm `cache` 64 phần tử. Mỗi lần gọi hàm `random()` thì lấy 1 phần tử trong `cache`, chuyển thành double rồi trả về kết quả đó. Khi `cache` hết giá trị, chạy lại `xorshift128` để refill lại 64 giá trị mới.
 
 Chi tiết hơn:
 
-PRNG `xorshift128+` lưu trạng thái 128-bit trong 2 biến 64-bit: `state0, state1`. Mỗi lần cập nhật, công thức của nó như sau:
+PRNG `xorshift128` lưu trạng thái 128-bit trong 2 biến 64-bit: `state0, state1`. Mỗi lần cập nhật, công thức của nó như sau:
 ```python
 def xs128(state0, state1):
     mask = (1 << 64) - 1
@@ -236,7 +236,7 @@ def xs128(state0, state1):
   - Lấy `cache[cache_idx]`, giảm `cache_idx` đi 1 đơn vị.
   - Nếu `cache_idx < 0` thì refill lại `cache`.
 
-Các số nguyên 64-bit từ `xorshift128+` sẽ được chuyển đổi thành số thực `[0, 1)` bằng cách:
+Các số nguyên 64-bit từ `xorshift128` sẽ được chuyển đổi thành số thực `[0, 1)` bằng cách:
 1. Bỏ đi 12 bit thấp nhất:
     - Trong IEEE754 double-precision (64-bit), phần mantissa chỉ có 52 bit.
     - `V8` không dùng toàn bộ 52 bit mà bỏ hẳn 12 bit thấp nhất của số nguyên để tránh các vấn đề về tính ngẫu nhiên ở các bit cuối của `xorshift128+`.
@@ -247,4 +247,3 @@ Các số nguyên 64-bit từ `xorshift128+` sẽ được chuyển đổi thàn
     - Sau khi gộp các bit `exponent` và `mantissa` vào một giá trị 64-bit, `V8` ép kiểu nó sang `double`. Kết quả thu được nằm trong khoảng `[1, 2)`, ta trừ nó đi $1$ đơn vị để đưa nó về đúng phạm vi kết quả của `Math.random()`.
 
 ### Cracking
-https://phongvu.vn/man-hinh-lcd-msi-24-5-pro-mp251l-e2-1920x1080-ips-120hz-4ms-gtg-1ms-mprt-adaptive-sync-den--s250633616
