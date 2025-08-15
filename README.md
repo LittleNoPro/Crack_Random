@@ -247,3 +247,20 @@ Các số nguyên 64-bit từ `xorshift128` sẽ được chuyển đổi thành
     - Sau khi gộp các bit `exponent` và `mantissa` vào một giá trị 64-bit, `V8` ép kiểu nó sang `double`. Kết quả thu được nằm trong khoảng `[1, 2)`, ta trừ nó đi $1$ đơn vị để đưa nó về đúng phạm vi kết quả của `Math.random()`.
 
 ### Cracking
+`xorshift128` là một hàm chỉ gồm các phép `XOR` và `Shift`, chúng đều tuyến tính trên `GF(2)` với trạng thái 64-bit. Tức là, mỗi bit của output sau một số bước sẽ là tổ hợp tuyến tính của các bit ban đầu.
+
+Vậy nên, nếu thu thập đủ số lượng output `double` liên tiếp, ta có nhiều phương trình tuyến tính trên 64 biến (các bit của trạng thái ban đầu). Giải hệ phương trình này trên `GF(2)` sẽ tìm được trạng thái ban đầu.
+
+Chi tiết thuật toán:
+1. Khôi phục lại 52 bit MSB của các `state0`
+```python
+def v8_from_double(double):
+    """
+    Convert a double back to a 64-bit integer.
+    The 12 least significant bits of the result cannot be recovered.
+    """
+    if double == 1.0:
+        return 0xffffffffffffffff
+    return (struct.unpack('<Q', struct.pack('d', double + 1.0))[0] & 0xfffffffffffff)
+```
+
