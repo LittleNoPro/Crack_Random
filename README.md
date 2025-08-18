@@ -247,5 +247,15 @@ Các số nguyên 64-bit từ `xorshift128` sẽ được chuyển đổi thành
     - Sau khi gộp các bit `exponent` và `mantissa` vào một giá trị 64-bit, `V8` ép kiểu nó sang `double`. Kết quả thu được nằm trong khoảng `[1, 2)`, ta trừ nó đi $1$ đơn vị để đưa nó về đúng phạm vi kết quả của `Math.random()`.
 
 ### Cracking
-`xorshift128` là một hàm chỉ gồm các phép `XOR` và `Shift`, chúng đều tuyến tính trên `GF(2)` với trạng thái 64-bit. Tức là, mỗi bit của output sau một số bước sẽ là tổ hợp tuyến tính của các bit ban đầu.
+`xorshift128` là một hàm chỉ gồm các phép `XOR` và `Shift`, chúng đều tuyến tính trên `GF(2)` với trạng thái 64-bit. Tức là, mỗi bit của output sau một số bước sẽ là tổ hợp tuyến tính của các bit ban đầu. Vậy, khi lấy đủ nhiều các `output` (52 bit mantissa từ `double`) thì ta có thể build được một hệ tuyến tính trên `GF(2)` và giải ra trạng thái ban đầu.
+
+Ban đầu ta sẽ tạo một hệ tuyến tính với 2 biến vector: `state0` và `state1`, mỗi vector có 64 bit.
+```python
+lin = LinearSystem([64] * 2)
+state0, state1 = lin.gens()
+```
+`state0` và `state1` hiện sẽ là 2 `symbolic bitvec` đại diện cho trạng thái ban đầu (mỗi bit là một ẩn trong `GF(2)`).
+
+
+
 
