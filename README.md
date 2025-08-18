@@ -352,3 +352,7 @@ Lần lượt di chuyển 2 con trỏ `tap, feed` về trước 1 đơn vị. N�
 $$
 x = (vec[feed] + vec[tap]) \bmod 2^{64}
 $$
+
+Sau đó cập nhật giá trị mới `vec[feed] = x` vào mảng trạng thái để tiếp tục sinh.
+
+### Cracking

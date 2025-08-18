@@ -1,33 +1,31 @@
-from rand import new_source, new
-from rng import RngSource, RNG_LEN
-from tqdm import trange
+from rng import *
 from z3 import *
 
 s = Solver()
 NUM_TEST = 700
 
 vec = [BitVec(f'vec_{i}', 64) for i in range(RNG_LEN)]
-rng = RngSource(vec)
-psudo_rand = new(rng)
-test = [psudo_rand.uint64() for _ in range(NUM_TEST)]
+rng_test = RngSource(vec)
+test = [rng_test.uint64() for _ in range(NUM_TEST)]
 
-src = new_source(123843)
-hehe = list(src.vec)
-rand = new(src)
-real = [rand.uint64() for _ in range(NUM_TEST)]
+rng_real = RngSource()
+rng_real.seed(0)
+real = [rng_real.uint64() for _ in range(NUM_TEST)]
 
-for i in trange(NUM_TEST):
-    s.add(real[i] == test[i])
+for i in range(NUM_TEST):
+    s.add(test[i] == real[i])
 
-print("solve......")
+print("Solving ...")
+
 if s.check() == sat:
+    m = s.model()
     model = s.model()
     array_values = [model.evaluate(vec[i]).as_long() for i in range(RNG_LEN)]
     rng = RngSource(array_values)
-    print(f"{hehe[:10] = }")
-    print(f"{rng.vec[:10] = }")
 
-    test_rand = new(rng)
-    test = [test_rand.uint64() for _ in range(NUM_TEST)]
-    for i in range(20):
-        print(test_rand.uint64(), rand.uint64())
+    for _ in range(NUM_TEST):
+        cur = rng.uint64()
+
+    for _ in range(10):
+        print(rng.uint64(), rng_real.uint64())
+
