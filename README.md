@@ -272,6 +272,33 @@ zeros = [(v8_from_double(numbers[i]) | 0x3ff0000000000000) ^ out[i] for i in ran
 sol = lin.solve_one(zeros)
 ```
 
-## 5.
+## 5. Lagged-Fibonacci Generator (Golang)
+Golang sử dụng một bộ sinh số giả ngẫu nhiên dựa trên **Lagged-Fibonacci generator (LFG)** kết hợp với cơ chế tính toán seed **Park-Miller LCG**.
+
+### Thuật toán
+`math/rand` duy trì một mảng vòng dài $607$ phần tử (`RNG_LEN`), mỗi phần tử có 64-bit. Khi sinh số mới, nó cộng 2 giá trị trong mảng, cách nhau $273$ ô (`RNG_TAP`).
+
+```python
+def seedrand(x):
+    """Seed function for rng: x[n+1] = 48271 * x[n] mod (2**31 - 1)"""
+    A = 48271
+    Q = 44488
+    R = 3399
+
+    hi = x // Q
+    lo = x % Q
+    x = A * lo - R * hi
+    if x < 0:
+        x += INT32_MAX
+    return x
+```
+Hàm `seedrand(x)` sử dụng **Park-Miller LCG** với `multiplier = 48271` để tính toán các giá trị tiếp theo của `seed`. Công thức gốc:
+
+$$
+x_{n+1} = (48271 \cdot x_n) \bmod {(2^{32} - 1)}
+$$
+
+Công thức này được trình bày trong code dưới dạng **Schrage’s method** để tránh tràn số.
+
 
 
