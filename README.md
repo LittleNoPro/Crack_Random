@@ -300,5 +300,55 @@ $$
 
 Công thức này được trình bày trong code dưới dạng **Schrage’s method** để tránh tràn số.
 
+Ban đầu, khởi tạo 2 con trỏ `tap, feed` chạy vòng quanh mảng để sinh ra các `output` và mảng `vec` để lưu trữ trạng thái của $607$ phần tử 64-bit.
 
+```python
+def seed(self, seed):
+    self.tap = 0
+    self.feed = RNG_LEN - RNG_TAP
 
+    seed %= INT32_MAX
+    if seed < 0:
+        seed += INT32_MAX
+    if seed == 0:
+        seed = 89482311
+
+    x = int(seed)
+    for i in range(-20, RNG_LEN):
+        x = seedrand(x)
+        if i >= 0:
+            u = (int(x) << 40) & 0xFFFFFFFFFFFFFFFF
+            x = seedrand(x)
+            u ^= (int(x) << 20) & 0xFFFFFFFFFFFFFFFF
+            x = seedrand(x)
+            u ^= int(x)
+            u ^= rng_cooked[i]
+            self.vec[i] = u
+```
+
+Hàm `seed` sẽ nhận đầu vào là giá trị `seed` mà ta muốn, sau đó tạo ra mảng trạng thái `vec`.
+- Nếu `seed = 0` thì `seed = 89482311`.
+- Sinh ra 3 giá trị liên tiếp bằng `seedrand()`, ghép chúng lại thành số 64-bit.
+- `XOR` với hằng số `rng_cooked[i]`.
+
+Sau khi có được `vec` rồi, với mỗi lần sinh một số `uint64 bit`:
+```python
+def uint64(self):
+    """Returns a non-negative pseudo-random 64-bit integer"""
+    self.tap -= 1
+    if self.tap < 0:
+        self.tap += RNG_LEN
+
+    self.feed -= 1
+    if self.feed < 0:
+        self.feed += RNG_LEN
+
+    x = (self.vec[self.feed] + self.vec[self.tap]) & 0xFFFFFFFFFFFFFFFF
+    self.vec[self.feed] = x
+    return x
+```
+Lần lượt di chuyển 2 con trỏ `tap, feed` về trước 1 đơn vị. Nếu đi hết mảng rồi thì quay về vị trí ban đầu. Kết quả của hàm này được tính bởi công thức **Additive Lagged-Fibonacci Generator**:
+
+$$
+x = (vec[feed] + vec[tap]) \bmod 2^{64}
+$$
