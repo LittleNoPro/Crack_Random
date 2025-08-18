@@ -39,7 +39,6 @@ numbers = [
     0.5230661117641415
 ]
 
-# exit(0)
 lin = LinearSystem([64] * 2)
 state0, state1 = lin.gens()
 
