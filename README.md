@@ -249,6 +249,10 @@ Các số nguyên 64-bit từ `xorshift128` sẽ được chuyển đổi thành
 ### Cracking
 `xorshift128` là một hàm chỉ gồm các phép `XOR` và `Shift`, chúng đều tuyến tính trên `GF(2)` với trạng thái 64-bit. Tức là, mỗi bit của output sau một số bước sẽ là tổ hợp tuyến tính của các bit ban đầu. Vậy, khi lấy đủ nhiều các `output` (52 bit mantissa từ `double`) thì ta có thể build được một hệ tuyến tính trên `GF(2)` và giải ra trạng thái ban đầu.
 
+Ý tưởng chính: Giả sử các bit trạng thái là ẩn. Ta mô phỏng lại hàm `xs128` symbolic để biết mỗi bit `output` là `XOR` của những ẩn nào. Rồi thay các bit đã biết (từ `double`) vào các biểu thức đó - ta được một hệ phương trình nhị phân. Giải hệ này bằng Gaussian elimination trên `GF(2)` là ra giá trị các bit trạng thái.
+
+Chi tiết:
+
 Ban đầu ta sẽ tạo một hệ tuyến tính với 2 biến vector: `state0` và `state1`, mỗi vector có 64 bit.
 ```python
 lin = LinearSystem([64] * 2)
@@ -256,6 +260,16 @@ state0, state1 = lin.gens()
 ```
 `state0` và `state1` hiện sẽ là 2 `symbolic bitvec` đại diện cho trạng thái ban đầu (mỗi bit là một ẩn trong `GF(2)`).
 
+Sinh ra một dãy các biểu thức `symbolic` tương ứng với từng lần gọi PRNG:
+```python
+Random = MathRandom(state0, state1, True)
+out = [Random.next() for _ in range(len(numbers))]
+```
 
+Lấy 52 bit mantissa từ các số `double` mà ta quan sát được, sau đó `OR` với `0x3ff0000000000000` để dựng lại 64-bit pattern của `double + 1.0`. Tiếp theo `XOR` giữa pattern thực tế (từ `numbers`) và các biểu thức symbolic `out[i]` cho một `bitvec` mà tất cả các bit của nó phải bằng $0$ (nếu các ẩn đúng). Tập `zeros` là tập các phương trình đầu vào cho solver. Cuối cùng, giải hệ tuyến tính `GF(2)` là ra kết quả.
+```python
+zeros = [(v8_from_double(numbers[i]) | 0x3ff0000000000000) ^ out[i] for i in range(len(numbers))]
+sol = lin.solve_one(zeros)
+```
 
 
