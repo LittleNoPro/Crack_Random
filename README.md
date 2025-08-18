@@ -356,3 +356,44 @@ $$
 Sau đó cập nhật giá trị mới `vec[feed] = x` vào mảng trạng thái để tiếp tục sinh.
 
 ### Cracking
+Như ta đã biết, bộ sinh số của `math/rand` là một mảng trạng thái gồm **607** phần tử. Mỗi lần sinh số mới, nó sẽ lấy 2 phần tử ở 2 vị trí cố định (`feed` và `tap`) rồi cộng lại và return giá trị đó. Sau đó, ghi đè kết quả đó vào một trong hai vị trí đó. Vì vậy, toàn bộ chuỗi "random" đều là kết quả của các phép cộng tuyến tính dựa trên **607** phần tử này.
+
+Vì chúng tuyến tính và lặp lại đúng 1 quy tắc, nếu ta có đủ số lượng `output` đủ dài liên tiếp, ta có thể xây dựng được hệ phương trình các tổ hợp tuyến tính của trạng thái ban đầu.
+
+Tóm lại, cách `crack` như sau:
+- Sử dụng `z3` để symbolic **607** phần tử trạng thái ban đầu.
+- Lần lượt cho nó chạy qua hàm sinh số của `rng` để tạo ra các phương trình symbolic (mỗi kết quả là một biểu thức phụ thuộc vào **607** ẩn).
+- Thêm các ràng buộc từ các `output` đã biết, sau đó để `z3` làm việc của nó.
+
+```python
+from rng import *
+from z3 import *
+
+s = Solver()
+NUM_TEST = 700
+
+vec = [BitVec(f'vec_{i}', 64) for i in range(RNG_LEN)]
+rng_test = RngSource(vec)
+test = [rng_test.uint64() for _ in range(NUM_TEST)]
+
+rng_real = RngSource()
+rng_real.seed(0)
+real = [rng_real.uint64() for _ in range(NUM_TEST)]
+
+for i in range(NUM_TEST):
+    s.add(test[i] == real[i])
+
+print("Solving ...")
+
+if s.check() == sat:
+    m = s.model()
+    model = s.model()
+    array_values = [model.evaluate(vec[i]).as_long() for i in range(RNG_LEN)]
+    rng = RngSource(array_values)
+
+    for _ in range(NUM_TEST):
+        cur = rng.uint64()
+
+    for _ in range(10):
+        print(rng.uint64(), rng_real.uint64())
+```
