@@ -62,7 +62,7 @@ $$
 #### Tempering
 Từ `mt[index]` tiếp tục đi qua các bước (XOR + shift + mask) với các tham số cố định:
 
-```
+```python
 x = self.mt[self.index]
 x ^= x >> self.u
 x ^= (x << self.s) & self.b
